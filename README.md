@@ -35,11 +35,13 @@ local spec = specs.define{
   }
 }
 
+local client = daedalus.make_client(spec)
+
 -- if you don't supply any arguments, the default values will be used
-spec.issues{}
+client.issues{}
 
 -- if you need to override any default behavior, you can do so through arguments
-spec.issues{
+client.issues{
   before = function(cmd)
     -- if you need to extend the curl command or debug it before calling,
     -- override this function
@@ -55,7 +57,7 @@ spec.issues{
   end
 }
 
-spec.create_issue{
+client.create_issue{
   urlargs = {
     owner = "hkupty",
     repo = "daedalus.nvim"
