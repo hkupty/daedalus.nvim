@@ -23,7 +23,7 @@ specs.define = function(opt)
       return nil
     end
 
-    for key, defval in pair(default) do
+    for key, defval in pairs(default) do
       if v[key] == nil then
         v[key] = defval
       end
