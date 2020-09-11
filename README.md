@@ -21,13 +21,24 @@ local spec = specs.define{
   -- default attributes of the client specs
   ['*'] = {
     url = "https://api.github.com",
+    handler = default_handler, -- you can specify default values that will be shared for all api specs
     auth = helpers.auth.bearer("$GITHUB_TOKEN") -- the bearer function expands env vars
   },
   issues = {
-    path = "/issues"
+    path = "/issues",
+    handler = issues_handler -- you can override global definitions per-api route
+  },
+  create_issue = {
+    path = "/repos/${owner}/${repo}/issues",
+    method = "post",
+
   }
 }
 
+-- if you don't supply any arguments, the default values will be used
+spec.issues{}
+
+-- if you need to override any default behavior, you can do so through arguments
 spec.issues{
   before = function(cmd)
     -- if you need to extend the curl command or debug it before calling,
@@ -38,9 +49,22 @@ spec.issues{
     -- the handler function receives already parsed objects
     print(vim.inspect(ret))
   end,
-  parser = function(str)
+  decode = function(str)
     -- if you need to parse values other than json, override this function
     return vim.fn.json_decode(str)
   end
 }
+
+spec.create_issue{
+  urlargs = {
+    owner = "hkupty",
+    repo = "daedalus.nvim"
+  },
+  payload = {
+      title = "Daedalus is awesome!",
+      body = "I'm testing daedalus and I think it's amazing! Thanks :)"
+  }
+
+}
+
 ```

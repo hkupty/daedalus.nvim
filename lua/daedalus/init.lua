@@ -14,7 +14,7 @@
 -- someAction = {
 --    url = function(arg) return "https://some.endpoint/" .. arg end,
 --    method = "post",
---    parser = function(ret)
+--    decode = function(ret)
 --      -- Parses the content if not json
 --    end
 -- }}
@@ -28,7 +28,11 @@
 --   end
 -- }
 
-arrow = function(coll)
+local function interpolate(s, tab)
+  return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
+end
+
+local arrow = function(coll)
   local nv = vim.deepcopy(coll[1])
   for _, fn in next, coll, 1 do
     nv = fn(nv)
@@ -39,7 +43,8 @@ local daedalus = {}
 
 daedalus.default_spec = {
   before = function(obj) return obj end,
-  parser = vim.fn.json_decode,
+  decode = vim.fn.json_decode,
+  encode = vim.fn.json_encode,
   handler = function(obj)
     vim.api.nvim_out_write("Please implement a handler for this API call.")
     vim.api.nvim_out_write(vim.inspect(obj))
@@ -50,7 +55,6 @@ daedalus.default_spec = {
 }
 
 daedalus.call = function(opt)
-  tap(opt)
   local cmd = { "curl", "-s" }
   if opt.method ~= "get" then
     table.insert(cmd, "-X" .. opt.method)
@@ -66,13 +70,23 @@ daedalus.call = function(opt)
     table.insert(cmd, "Authorization: " .. opt.auth)
   end
 
-  table.insert(cmd, opt.url)
+  if opt.payload ~= nil then
+    table.insert(cmd, "-d")
+    table.insert(cmd, opt.encode(opt.payload))
+  end
+
+  local url = opt.url
+  if opt.urlargs ~= nil then
+    url = interpolate(url, opt.urlargs)
+  end
+
+  table.insert(cmd, url)
 
   return arrow{
     cmd,
     opt.before,
     vim.fn.system,
-    opt.parser,
+    opt.decode,
     opt.handler
   }
 end
