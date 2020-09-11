@@ -57,7 +57,7 @@ daedalus.default_spec = {
 daedalus.call = function(opt)
   local cmd = { "curl", "-s" }
   if opt.method ~= "get" then
-    table.insert(cmd, "-X" .. opt.method)
+    table.insert(cmd, "-X" .. string.upper(opt.method))
   end
 
   if opt.auth ~= nil then
