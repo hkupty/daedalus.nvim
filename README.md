@@ -66,7 +66,5 @@ client.create_issue{
       title = "Daedalus is awesome!",
       body = "I'm testing daedalus and I think it's amazing! Thanks :)"
   }
-
 }
-
 ```
