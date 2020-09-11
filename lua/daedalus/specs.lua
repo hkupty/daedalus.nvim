@@ -29,7 +29,6 @@ specs.define = function(opt)
       end
     end
 
-
   end, opt)
 
   return opt
