@@ -32,6 +32,22 @@ local function interpolate(s, tab)
   return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
 end
 
+local function qstring(args)
+  local str = ""
+  local has = false
+
+  for k, v in pairs(args) do
+    if has then
+      str = str .. "&"
+  end
+  -- TODO escape strings
+  str = str .. k .. "=" .. v
+  has = true
+  end
+
+  return str
+end
+
 local arrow = function(coll)
   local nv = vim.deepcopy(coll[1])
   for _, fn in next, coll, 1 do
@@ -73,6 +89,10 @@ daedalus.call = function(opt)
   local url = opt.url
   if opt.urlargs ~= nil then
     url = interpolate(url, opt.urlargs)
+  end
+
+  if opt.querystring ~= nil then
+    url = url .. "?" .. qstring(opt.querystring)
   end
 
   table.insert(cmd, url)
