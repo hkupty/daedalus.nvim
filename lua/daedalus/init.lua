@@ -65,6 +65,11 @@ daedalus.call = function(opt)
     table.insert(cmd, "Authorization: " .. opt.auth)
   end
 
+  if opt.auth_basic ~= nil then
+    table.insert(cmd, "-u")
+    table.insert(cmd, opt.auth_basic)
+  end
+
   if opt.payload ~= nil then
     table.insert(cmd, "-d")
     table.insert(cmd, opt.encode(opt.payload))
