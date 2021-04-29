@@ -70,6 +70,13 @@ daedalus.call = function(opt)
     table.insert(cmd, opt.encode(opt.payload))
   end
 
+  if opt.headers ~= nil then
+    for k, v in pairs(opt.headers) do
+      table.insert(cmd, "-H")
+      table.insert(cmd, k..': '..v)
+    end
+  end
+
   local url = opt.url
   if opt.urlargs ~= nil then
     url = interpolate(url, opt.urlargs)
