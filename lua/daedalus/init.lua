@@ -5,7 +5,7 @@
 -- Sample rest spec:
 -- {
 -- * = {
---  auth = "Bearer <toke
+--  auth = "Bearer <token>"
 -- },
 -- create = {
 --    url = "https://some.endpoint/", -- static url
